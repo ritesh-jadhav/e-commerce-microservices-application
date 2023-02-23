@@ -1,0 +1,22 @@
+server:
+  port: 8082
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql:://{DB_HOST:localhost}:3306/sampleOrder
+  application:
+    name: ORDER-SERVICE
+eureka:
+  client:
+    service-url: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
