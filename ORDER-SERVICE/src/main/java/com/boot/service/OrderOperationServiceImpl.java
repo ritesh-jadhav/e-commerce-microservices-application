@@ -14,6 +14,11 @@ import java.time.Instant;
 @Slf4j
 public class OrderOperationServiceImpl implements IorderOperationService{
 
+
+    //    Call product service
+    //    Block the product -> Reduce Quantity
+    //    save the order
+
     @Autowired
     private IorderRepository orderRepo;
 

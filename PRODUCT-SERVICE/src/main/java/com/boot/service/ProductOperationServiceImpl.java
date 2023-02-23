@@ -8,6 +8,8 @@ import com.boot.repo.IProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 @Slf4j
@@ -40,5 +42,16 @@ public class ProductOperationServiceImpl implements IProductOperationService{
                 .quantity(requiredProduct.getQuantity())
                 .build();
         return response;
+    }
+
+    @Override
+    public void ReduceQuantity( Long product_id,Long quantity) {
+        Product requiredProduct = productRepo.findById(product_id).orElseThrow(() -> new ProductServiceCustomException("Product not found with given id","PRODUCT_NOT_FOUND"));
+        if (requiredProduct.getQuantity() < quantity){
+            throw  new ProductServiceCustomException("Product does not have sufficient quantity","INSUFFICIENT_QUANTITY");
+        }
+        requiredProduct.setQuantity(requiredProduct.getQuantity() - quantity);
+        productRepo.save(requiredProduct);
+        log.info("Quantity reduced Successfully...!");
     }
 }
