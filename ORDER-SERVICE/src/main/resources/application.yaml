@@ -10,12 +10,13 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
-    url: jdbc:mysql:://{DB_HOST:localhost}:3306/sampleOrder
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/sampleorder
   application:
     name: ORDER-SERVICE
 eureka:
   client:
-    service-url: http://localhost:8761/eureka
+    service-url:
+      defaultZone : http://localhost:8761/eureka
     register-with-eureka: true
     fetch-registry: true
   instance:

@@ -25,6 +25,7 @@ public class OrderOperationServiceImpl implements IorderOperationService{
     @Override
     public Long saveOrder(OrderRequest request) {
         log.info("creating order...");
+        log.info("Incoming request :: {}",request.toString());
         Order createOrder = Order.builder()
                 .orderDate(Instant.now())
                 .product_id(request.getProduct_id())
@@ -32,6 +33,7 @@ public class OrderOperationServiceImpl implements IorderOperationService{
                 .totalAmount(request.getAmount())
                 .status("CREATED")
                 .build();
+        orderRepo.save(createOrder);
         log.info("Order Created...!");
         return createOrder.getOrder_id();
     }
