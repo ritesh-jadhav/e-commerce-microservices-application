@@ -1,6 +1,7 @@
 package com.boot.service;
 
 import com.boot.entity.Product;
+import com.boot.exception.ProductServiceCustomException;
 import com.boot.modal.ProductRequest;
 import com.boot.modal.ProductResponse;
 import com.boot.repo.IProductRepository;
@@ -31,7 +32,7 @@ public class ProductOperationServiceImpl implements IProductOperationService{
     @Override
     public ProductResponse getProductById(Long product_id) {
         log.info("Fetching Product....");
-        Product requiredProduct = productRepo.findById(product_id).orElseThrow(() -> new RuntimeException("Product not found with given id"));
+        Product requiredProduct = productRepo.findById(product_id).orElseThrow(() -> new ProductServiceCustomException("Product not found with given id","PRODUCT_NOT_FOUND"));
         ProductResponse response = ProductResponse.builder()
                 .product_id(requiredProduct.getProduct_id())
                 .name(requiredProduct.getName())
