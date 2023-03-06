@@ -1,0 +1,17 @@
+server:
+  port: 8082
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/sampleorder
+  application:
+    name: ORDER-SERVICE
+  config:
+    import: configserver:http://localhost:9296
