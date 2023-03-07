@@ -66,6 +66,18 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>com.ritesh</groupId>
+            <artifactId>PRODUCT-SERVICE</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>com.ritesh</groupId>
+			<artifactId>PRODUCT-SERVICE</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 
 	</dependencies>
 	<dependencyManagement>

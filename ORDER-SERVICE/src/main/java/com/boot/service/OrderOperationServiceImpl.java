@@ -1,21 +1,25 @@
 package com.boot.service;
 
 import com.boot.entity.Order;
+import com.boot.exception.CustomException;
 import com.boot.external.client.IPaymentService;
 import com.boot.external.client.IProductService;
 import com.boot.external.request.PaymentRequest;
 import com.boot.modal.OrderRequest;
+import com.boot.modal.OrderResponse;
+import com.boot.modal.ProductResponse;
 import com.boot.repo.IorderRepository;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.Id;
 import java.time.Instant;
 
 @Service
 @Slf4j
-public class OrderOperationServiceImpl implements IorderOperationService{
+public class OrderOperationServiceImpl implements IOrderOperationService {
 
     //    Call product service
     //    Block the product -> Reduce Quantity
@@ -29,6 +33,9 @@ public class OrderOperationServiceImpl implements IorderOperationService{
 
     @Autowired
     private IPaymentService paymentService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public Long saveOrder(OrderRequest request) {
@@ -66,5 +73,30 @@ public class OrderOperationServiceImpl implements IorderOperationService{
         orderRepo.save(createOrder);
         log.info("Order Created...!");
         return createOrder.getOrder_id();
+    }
+
+    @Override
+    public OrderResponse getOrderDetails(Long orderId) {
+        Order requiredOrder = orderRepo.findById(orderId).orElseThrow( () -> new CustomException("Order not found with id "+orderId,
+                "ORDER_NOT_FOUND"
+                ,404));
+        log.info("Invoking product service for getting product details for the id:: {}",requiredOrder.getOrder_id());
+        ProductResponse productResponse = restTemplate.getForObject("http://PRODUCT-SERVICE/product/"+requiredOrder.getProduct_id(), ProductResponse.class);
+
+        OrderResponse.ProductDetails productDetails = OrderResponse.ProductDetails.builder()
+                .product_id(productResponse.getProduct_id())
+                .name(productResponse.getName())
+                .price(productResponse.getPrice())
+                .quantity(productResponse.getQuantity())
+                .build();
+
+        OrderResponse orderResponse = OrderResponse.builder()
+                .orderId(requiredOrder.getOrder_id())
+                .amount(requiredOrder.getTotalAmount())
+                .orderDate(requiredOrder.getOrderDate())
+                .orderStatus(requiredOrder.getStatus())
+                .productDetails(productDetails)
+                 .build();
+        return orderResponse;
     }
 }
