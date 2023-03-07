@@ -5,6 +5,7 @@ import com.boot.exception.CustomException;
 import com.boot.external.client.IPaymentService;
 import com.boot.external.client.IProductService;
 import com.boot.external.request.PaymentRequest;
+import com.boot.external.response.PaymentResponse;
 import com.boot.modal.OrderRequest;
 import com.boot.modal.OrderResponse;
 import com.boot.modal.ProductResponse;
@@ -90,12 +91,24 @@ public class OrderOperationServiceImpl implements IOrderOperationService {
                 .quantity(productResponse.getQuantity())
                 .build();
 
+        log.info("Calling payment service from product service to fetch payment details for orderId:: {}",requiredOrder.getOrder_id());
+
+        PaymentResponse paymentResponse =restTemplate.getForObject("http://PAYMENT-SERVICE/payment/order/"+requiredOrder.getOrder_id(),PaymentResponse.class);
+
+        OrderResponse.PaymentDetails paymentDetails= OrderResponse.PaymentDetails.builder()
+                .paymentDate(paymentResponse.getPaymentDate())
+                .paymentId(paymentResponse.getPaymentId())
+                .paymentMode(paymentResponse.getPaymentMode())
+                .paymentStatus(paymentResponse.getStatus())
+                .build();
+
         OrderResponse orderResponse = OrderResponse.builder()
                 .orderId(requiredOrder.getOrder_id())
                 .amount(requiredOrder.getTotalAmount())
                 .orderDate(requiredOrder.getOrderDate())
                 .orderStatus(requiredOrder.getStatus())
                 .productDetails(productDetails)
+                .paymentDetails(paymentDetails)
                  .build();
         return orderResponse;
     }
