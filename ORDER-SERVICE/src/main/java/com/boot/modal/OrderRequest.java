@@ -13,6 +13,6 @@ public class OrderRequest {
     private Long product_id;
     private Long quantity;
     private Long amount;
-    private  String paymentMode;
+    private  PaymentMode paymentMode;
 
 }

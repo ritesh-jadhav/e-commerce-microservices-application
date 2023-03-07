@@ -1,7 +1,9 @@
 package com.boot.service;
 
 import com.boot.entity.Order;
+import com.boot.external.client.IPaymentService;
 import com.boot.external.client.IProductService;
+import com.boot.external.request.PaymentRequest;
 import com.boot.modal.OrderRequest;
 import com.boot.repo.IorderRepository;
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +27,9 @@ public class OrderOperationServiceImpl implements IorderOperationService{
     @Autowired
     private IProductService productService;
 
+    @Autowired
+    private IPaymentService paymentService;
+
     @Override
     public Long saveOrder(OrderRequest request) {
         log.info("creating order...");
@@ -40,9 +45,26 @@ public class OrderOperationServiceImpl implements IorderOperationService{
                 .status("CREATED")
                 .build();
         orderRepo.save(createOrder);
+        log.info("Calling payment service...");
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .orderId(createOrder.getOrder_id())
+                .paymentMode(request.getPaymentMode())
+                .amount(request.getAmount())
+                .build();
 
+        String orderStatus =null;
+
+        try {
+            paymentService.doPayment(paymentRequest);
+            log.info("Payment Successful...!Changing order status to placed");
+            orderStatus="PLACED";
+        }catch (Exception exception){
+            log.error("Error occurred in payment...!Changing order status to cancelled");
+            orderStatus="PAYMENT_FAILED";
+        }
+        createOrder.setStatus(orderStatus);
+        orderRepo.save(createOrder);
         log.info("Order Created...!");
-
         return createOrder.getOrder_id();
     }
 }
